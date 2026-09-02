@@ -1,55 +1,50 @@
 // ============================================
 // MAHA BRIDAL BOUTIQUE 2005
-// Website Demo — JavaScript
+// Heritage Luxury Demo — JavaScript
 // ============================================
 
-// Replace with the real WhatsApp number
+// Replace with the real WhatsApp number.
 // Example: 919876543210
-const WHATSAPP_NUMBER = "9788605021";
+const WHATSAPP_NUMBER = "";
 
 
-// ============================================
-// 1. SERVICE → BOOKING FORM
-// ============================================
-
+// SERVICE → BOOKING FORM
 document.querySelectorAll("a[data-service]").forEach(link => {
   link.addEventListener("click", () => {
     const service = link.dataset.service;
     const select = document.getElementById("service");
 
     if (select) {
-      select.value = service;
+      const options = [...select.options];
+      const matching = options.find(option => option.value === service);
+
+      if (matching) {
+        select.value = service;
+      } else {
+        // Keep the enquiry meaningful even when the exact package
+        // is not present in the dropdown.
+        select.value = options[0]?.value || "";
+      }
     }
   });
 });
 
 
-// ============================================
-// 2. STYLE FINDER CHIPS
-// ============================================
-
+// STYLE FINDER
 document.querySelectorAll(".chip").forEach(chip => {
   chip.addEventListener("click", () => {
-
     document.querySelectorAll(".chip").forEach(item => {
       item.classList.remove("active");
     });
 
     chip.classList.add("active");
-
   });
 });
 
 
-// ============================================
-// 3. PORTFOLIO FILTER
-// ============================================
-
+// PORTFOLIO FILTER
 document.querySelectorAll(".filter-btn").forEach(button => {
-
   button.addEventListener("click", () => {
-
-    // Active button
     document.querySelectorAll(".filter-btn").forEach(btn => {
       btn.classList.remove("active");
     });
@@ -58,35 +53,22 @@ document.querySelectorAll(".filter-btn").forEach(button => {
 
     const filter = button.dataset.filter;
 
-    // Filter gallery
     document.querySelectorAll(".gallery-item").forEach(item => {
-
-      if (
+      const shouldShow =
         filter === "all" ||
-        item.classList.contains(filter)
-      ) {
-        item.classList.remove("hidden");
-      } else {
-        item.classList.add("hidden");
-      }
+        item.classList.contains(filter);
 
+      item.classList.toggle("hidden", !shouldShow);
     });
-
   });
-
 });
 
 
-// ============================================
-// 4. WHATSAPP BOOKING FORM
-// ============================================
-
+// WHATSAPP BOOKING
 const bookingForm = document.getElementById("bookingForm");
 
 if (bookingForm) {
-
-  bookingForm.addEventListener("submit", function (event) {
-
+  bookingForm.addEventListener("submit", event => {
     event.preventDefault();
 
     const name = document.getElementById("name").value.trim();
@@ -95,7 +77,6 @@ if (bookingForm) {
     const date =
       document.getElementById("date").value ||
       "Not specified";
-
 
     const message = `Hello Maha Bridal Boutique 2005 ✨
 
@@ -112,208 +93,107 @@ I found your website and would like to know the details.
 
 Thank you ❤️`;
 
-
     const whatsappURL =
       `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 
-
     window.open(whatsappURL, "_blank");
-
   });
-
 }
 
 
-// ============================================
-// 5. SCROLL REVEAL ANIMATION
-// ============================================
-
+// SCROLL REVEAL
 const revealObserver = new IntersectionObserver(
-  (entries, observer) => {
-
+  entries => {
     entries.forEach(entry => {
-
       if (entry.isIntersecting) {
-
         entry.target.classList.add("show");
-
-        observer.unobserve(entry.target);
-
+        revealObserver.unobserve(entry.target);
       }
-
     });
-
   },
-  {
-    threshold: 0.12
-  }
+  { threshold: 0.12 }
 );
-
 
 document.querySelectorAll(".reveal").forEach(element => {
   revealObserver.observe(element);
 });
 
 
-// ============================================
-// 6. MOBILE MENU
-// ============================================
-
+// MOBILE MENU
 const menuButton = document.querySelector(".menu");
-const navigation = document.querySelector("nav");
+const navigation = document.getElementById("mainNav");
 
 if (menuButton && navigation) {
-
   menuButton.addEventListener("click", () => {
+    const open = navigation.classList.toggle("mobile-open");
 
-    const isOpen = navigation.classList.toggle("mobile-open");
+    menuButton.setAttribute("aria-expanded", String(open));
 
-    if (isOpen) {
-
+    if (open) {
       navigation.style.display = "flex";
       navigation.style.position = "absolute";
-      navigation.style.top = "82px";
+      navigation.style.top = "72px";
       navigation.style.left = "0";
       navigation.style.right = "0";
-      navigation.style.padding = "20px 7%";
-      navigation.style.background = "#fffdfb";
+      navigation.style.padding = "22px 6%";
+      navigation.style.background = "rgba(9,7,7,.98)";
       navigation.style.flexDirection = "column";
+      navigation.style.alignItems = "flex-start";
       navigation.style.gap = "18px";
-      navigation.style.borderBottom =
-        "1px solid #eadfdc";
-
+      navigation.style.borderBottom = "1px solid rgba(244,234,219,.14)";
     } else {
-
       navigation.style.display = "";
-
     }
-
   });
 
-
-  // Close menu after clicking a navigation link
   navigation.querySelectorAll("a").forEach(link => {
-
     link.addEventListener("click", () => {
-
-      if (window.innerWidth <= 900) {
+      if (window.innerWidth <= 760) {
         navigation.classList.remove("mobile-open");
         navigation.style.display = "";
+        menuButton.setAttribute("aria-expanded", "false");
       }
-
     });
-
   });
-
 }
 
 
-// ============================================
-// 7. CLOSE MOBILE MENU ON RESIZE
-// ============================================
-
+// CLOSE MENU ON RESIZE
 window.addEventListener("resize", () => {
-
-  if (window.innerWidth > 900 && navigation) {
-
+  if (window.innerWidth > 760 && navigation) {
     navigation.classList.remove("mobile-open");
     navigation.style.display = "";
-
+    menuButton?.setAttribute("aria-expanded", "false");
   }
-
 });
 
 
-// ============================================
-// 8. SMOOTH SCROLL
-// ============================================
-
-document.querySelectorAll('a[href^="#"]').forEach(link => {
-
-  link.addEventListener("click", function (event) {
-
-    const targetID = this.getAttribute("href");
-
-    if (!targetID || targetID === "#") return;
-
-    const target = document.querySelector(targetID);
-
-    if (target) {
-
-      event.preventDefault();
-
-      target.scrollIntoView({
-        behavior: "smooth",
-        block: "start"
-      });
-
-    }
-
-  });
-
-});
-
-
-// ============================================
-// 9. SET MINIMUM BOOKING DATE
-// ============================================
-
+// MINIMUM BOOKING DATE = TODAY
 const dateInput = document.getElementById("date");
 
 if (dateInput) {
-
   const today = new Date();
-
   const year = today.getFullYear();
   const month = String(today.getMonth() + 1).padStart(2, "0");
   const day = String(today.getDate()).padStart(2, "0");
 
   dateInput.min = `${year}-${month}-${day}`;
-
 }
 
 
-// ============================================
-// 10. WHATSAPP FLOATING BUTTON
-// ============================================
-
-const whatsappButtons =
-  document.querySelectorAll("[data-whatsapp]");
-
-whatsappButtons.forEach(button => {
-
-  button.addEventListener("click", () => {
-
-    const message =
-      "Hello Maha Bridal Boutique 2005 ✨\n\nI would like to enquire about your bridal services.";
-
-    const url =
-      `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-
-    window.open(url, "_blank");
-
-  });
-
-});
-
-
-// ============================================
-// 11. IMAGE LAZY LOADING
-// ============================================
-
+// IMAGE LAZY LOADING
 document.querySelectorAll("img").forEach(image => {
-
   if (!image.hasAttribute("loading")) {
     image.setAttribute("loading", "lazy");
   }
-
 });
 
 
-// ============================================
-// 12. CONSOLE MESSAGE
-// ============================================
+// FALLBACK FOR REDUCED MOTION
+if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  document.querySelectorAll(".reveal").forEach(element => {
+    element.classList.add("show");
+  });
+}
 
-console.log(
-  "✨ Maha Bridal Boutique 2005 website loaded successfully."
-);
+console.log("✦ MAHA BRIDAL BOUTIQUE 2005 — Luxury website loaded.");
